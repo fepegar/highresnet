@@ -192,7 +192,7 @@ class ResidualBlock(nn.Module):
                     out_channels,
                     kernel_size=1,
                     dilation=dilation,
-                    bias=False,
+                    bias=False,  # as in NiftyNet and PyTorch's ResNet model
                 )
 
         conv_blocks = nn.ModuleList()
@@ -277,12 +277,13 @@ class ConvolutionalBlock(nn.Module):
         if kernel_size > 1:
             layers.append(padding_instance)
 
+        use_bias = not (instance_norm or batch_norm)
         conv_layer = conv_class(
             in_channels,
             out_channels,
             kernel_size=kernel_size,
             dilation=dilation,
-            bias=False,
+            bias=use_bias,
         )
         layers.append(conv_layer)
 
