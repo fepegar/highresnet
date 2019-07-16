@@ -3,12 +3,13 @@ from torch import nn
 import torch.nn.functional as F
 import numpy as np
 
+__all__ = ['HighRes2DNet', 'HighRes3DNet']
+
 PADDING_MODES = {
     'reflect': 'Reflection',
     'replicate': 'Replication',
     'constant': 'Zero',
 }
-
 
 class HighResNet(nn.Module):
     def __init__(self,
