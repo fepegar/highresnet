@@ -339,3 +339,6 @@ TSWLatexianTemp*
 
 # standalone packages
 *.sta
+
+.pytest_cache
+
