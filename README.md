@@ -4,4 +4,4 @@ PyTorch implementation of HighRes3DNet from [Li et al., 2017,
 
 A 2D version (HighRes2DNet) is also available.
 
-[li]: (https://arxiv.org/pdf/1707.01992.pdf)
+[li]: https://arxiv.org/pdf/1707.01992.pdf
