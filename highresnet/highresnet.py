@@ -256,7 +256,8 @@ class ConvolutionalBlock(nn.Module):
         super().__init__()
 
         if dimensions == 2:
-            padding_class = getattr(nn, f'{PADDING_MODES[padding_mode]}Pad2d')
+            class_name = '{}Pad2d'.format(PADDING_MODES[padding_mode])
+            padding_class = getattr(nn, class_name)
             padding_instance = padding_class(dilation)
         elif dimensions == 3:
             padding_instance = Pad3d(dilation, padding_mode)
