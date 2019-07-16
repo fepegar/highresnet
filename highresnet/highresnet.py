@@ -221,7 +221,7 @@ class ResidualBlock(nn.Module):
         This option introduces no extra parameter
 
         (B) The projection shortcut in Eqn.(2) is used to
-        match dimensions (done by 1×1 convolutions).
+        match dimensions (done by 1x1 convolutions).
 
         For both options, when the shortcuts go across feature maps of
         two sizes, they are performed with a stride of 2."
