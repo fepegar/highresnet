@@ -8,9 +8,24 @@ A 2D version (HighRes2DNet) is also available.
 
 [li]: https://arxiv.org/pdf/1707.01992.pdf
 
-# Installation
+## Installation
 
-## `pip`
+### PyTorch hub
+
+If you are using the nightly version of PyTorch, you can import the model
+directly from this repository using [PyTorch hub](https://pytorch.org/hub).
+
+```python
+>>> github = 'fepegar/highresnet'
+>>> model_name = 'highres3dnet'
+>>> print(torch.hub.help(github, model_name))
+
+        HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation
+    
+>>> model = torch.hub.load(github, model_name, in_channels=1, out_channels=160)
+```
+
+### `pip`
 
 ```shell
 $ pip install highresnet
@@ -21,20 +36,6 @@ $ pip install highresnet
 >>> model = HighRes3DNet(in_channels=1, out_channels=160)
 ```
 
-## PyTorch hub
 
-If you are using the nightly version of PyTorch, you can import the model
-from [PyTorch hub](https://pytorch.org/hub).
-
-```python
->>> github = 'fepegar/highresnet'
->>> model_name = 'highres3dnet'
->>> print(torch.hub.help(github, model_name))
-
-        HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation
-    
->>> model = torch.hub.load(github, model_name, in_channels=1, out_channels=160)
-
-```
 
 
