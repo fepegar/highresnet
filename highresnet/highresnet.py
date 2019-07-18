@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 
 __all__ = ['HighRes2DNet', 'HighRes3DNet']
 
@@ -119,7 +118,7 @@ class HighResNet(nn.Module):
 
     @property
     def num_parameters(self):
-        return sum(np.prod(p.shape) for p in self.parameters())
+        return sum(torch.prod(torch.tensor(p.shape)) for p in self.parameters())
 
     @property
     def receptive_field(self):
@@ -131,8 +130,8 @@ class HighResNet(nn.Module):
         B = self.layers_per_residual_block
         D = self.dilations
         N = self.residual_blocks_per_dilation
-        d = np.arange(D)
-        input_output_diff = (3 - 1) + np.sum(B * N * 2 ** (d + 1))
+        d = torch.arange(D)
+        input_output_diff = (3 - 1) + torch.sum(B * N * 2 ** (d + 1))
         receptive_field = input_output_diff + 1
         return receptive_field
 
