@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
@@ -11,23 +11,27 @@ PADDING_MODES = {
     'constant': 'Zero',
 }
 
+BATCH_DIM = 0
+CHANNELS_DIM = 1
+
+
 class HighResNet(nn.Module):
-    def __init__(self,
-                 in_channels,
-                 out_channels,
-                 dimensions=None,
-                 initial_out_channels_power=4,
-                 layers_per_residual_block=2,
-                 residual_blocks_per_dilation=3,
-                 dilations=3,
-                 batch_norm=True,
-                 instance_norm=False,
-                 residual=True,
-                 softmax=True,
-                 padding_mode='constant',
-                 add_dropout_layer=False,
-                 add_last_norm_layer=True,
-                 ):
+    def __init__(
+            self,
+            in_channels,
+            out_channels,
+            dimensions=None,
+            initial_out_channels_power=4,
+            layers_per_residual_block=2,
+            residual_blocks_per_dilation=3,
+            dilations=3,
+            batch_norm=True,
+            instance_norm=False,
+            residual=True,
+            softmax=True,
+            padding_mode='constant',
+            add_dropout_layer=False,
+            ):
         assert padding_mode in PADDING_MODES.keys()
         assert dimensions in (2, 3)
         super().__init__()
@@ -107,7 +111,7 @@ class HighResNet(nn.Module):
         blocks.append(classifier)
 
         if softmax:
-            blocks.append(nn.Softmax(dim=1))
+            blocks.append(nn.Softmax(dim=CHANNELS_DIM))
         self.block = nn.Sequential(*blocks)
 
     def forward(self, x):
@@ -149,9 +153,18 @@ class HighRes3DNet(HighResNet):
 
 
 class DilationBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, dilation, dimensions,
-                 layers_per_block=2, num_residual_blocks=3, batch_norm=True,
-                 instance_norm=False, residual=True):
+    def __init__(
+            self,
+            in_channels,
+            out_channels,
+            dilation,
+            dimensions,
+            layers_per_block=2,
+            num_residual_blocks=3,
+            batch_norm=True,
+            instance_norm=False,
+            residual=True,
+            ):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -176,9 +189,18 @@ class DilationBlock(nn.Module):
 
 
 class ResidualBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, num_layers, dilation, dimensions,
-                 batch_norm=True, instance_norm=False, residual=True,
-                 residual_type='pad'):
+    def __init__(
+            self,
+            in_channels,
+            out_channels,
+            num_layers,
+            dilation,
+            dimensions,
+            batch_norm=True,
+            instance_norm=False,
+            residual=True,
+            residual_type='pad',
+            ):
         assert residual_type in ('pad', 'project')
         super().__init__()
         self.residual = residual
@@ -232,25 +254,33 @@ class ResidualBlock(nn.Module):
                 if self.residual_type == 'project':
                     x = self.change_dim_layer(x)
                 elif self.residual_type == 'pad':
-                    if self.dimensions == 2:
-                        N, _, H, W = x.shape
-                        diff = out.shape[1] - x.shape[1]  # diff of channels
-                        zeros = x.new_zeros(N, diff, H, W)
-                    elif self.dimensions == 3:
-                        N, _, D, H, W = x.shape
-                        diff = out.shape[1] - x.shape[1]  # diff of channels
-                        zeros_half = x.new_zeros(N, diff // 2, D, H, W)
+                    batch_size = x.shape[BATCH_DIM]
+                    x_channels = x.shape[CHANNELS_DIM]
+                    out_channels = out.shape[CHANNELS_DIM]
+                    spatial_dims = x.shape[2:]
+                    diff_channels = out_channels - x_channels
+                    zeros_half = x.new_zeros(
+                        batch_size, diff_channels // 2, *spatial_dims)
                     x = torch.cat((zeros_half, x, zeros_half),
-                                  dim=1)  # channels dimension
+                                  dim=CHANNELS_DIM)
             out = x + out
         return out
 
 
 class ConvolutionalBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, dilation,
-                 dimensions, batch_norm=True, instance_norm=False,
-                 padding_mode='constant', preactivation=True, kernel_size=3,
-                 activation=True):
+    def __init__(
+            self,
+            in_channels,
+            out_channels,
+            dilation,
+            dimensions,
+            batch_norm=True,
+            instance_norm=False,
+            padding_mode='constant',
+            preactivation=True,
+            kernel_size=3,
+            activation=True,
+            ):
         assert padding_mode in PADDING_MODES.keys()
         assert not (batch_norm and instance_norm)
         super().__init__()
