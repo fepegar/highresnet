@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-__all__ = ['HighRes2DNet', 'HighRes3DNet']
+__all__ = ['HighResNet', 'HighRes2DNet', 'HighRes3DNet']
 
 PADDING_MODES = {
     'reflect': 'Reflection',
