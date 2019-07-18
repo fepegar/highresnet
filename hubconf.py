@@ -1,10 +1,10 @@
 import torch
-from highresnet import HighRes3DNet
 
 dependencies = ['torch']
 
 
 def highres3dnet(*args, pretrained=False, **kwargs):
+    from highresnet import HighRes3DNet
     model = HighRes3DNet(*args, **kwargs)
     if pretrained:
         state_dict_path = 'highres3dnet_li_parameters.pth'
