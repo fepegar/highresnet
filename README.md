@@ -20,7 +20,7 @@ directly from this repository using [PyTorch hub](https://pytorch.org/hub).
 >>> model_name = 'highres3dnet'
 >>> print(torch.hub.help(github, model_name))
 
-        HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation
+        "HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation"
     
 >>> model = torch.hub.load(github, model_name, in_channels=1, out_channels=160)
 ```
