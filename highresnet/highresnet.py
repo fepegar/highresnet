@@ -53,6 +53,7 @@ class HighResNet(nn.Module):
             batch_norm=batch_norm,
             instance_norm=instance_norm,
             preactivation=False,
+            padding_mode=padding_mode,
         )
         blocks.append(first_conv_block)
 
@@ -72,6 +73,7 @@ class HighResNet(nn.Module):
                 batch_norm=batch_norm,
                 instance_norm=instance_norm,
                 residual=residual,
+                padding_mode=padding_mode,
             )
             blocks.append(dilation_block)
             out_channels *= 2
@@ -105,6 +107,7 @@ class HighResNet(nn.Module):
             preactivation=False,
             kernel_size=1,
             activation=False,
+            padding_mode=padding_mode,
         )
 
         blocks.append(classifier)
@@ -163,6 +166,7 @@ class DilationBlock(nn.Module):
             batch_norm=True,
             instance_norm=False,
             residual=True,
+            padding_mode=padding_mode,
             ):
         super().__init__()
         self.in_channels = in_channels
@@ -178,6 +182,7 @@ class DilationBlock(nn.Module):
                 batch_norm=batch_norm,
                 instance_norm=instance_norm,
                 residual=residual,
+                padding_mode=padding_mode,
             )
             residual_blocks.append(residual_block)
             in_channels = out_channels
@@ -199,6 +204,7 @@ class ResidualBlock(nn.Module):
             instance_norm=False,
             residual=True,
             residual_type='pad',
+            padding_mode=padding_mode,
             ):
         assert residual_type in ('pad', 'project')
         super().__init__()
@@ -226,6 +232,7 @@ class ResidualBlock(nn.Module):
                 dimensions,
                 batch_norm=batch_norm,
                 instance_norm=instance_norm,
+                padding_mode=padding_mode,
             )
             conv_blocks.append(conv_block)
             in_channels = out_channels
