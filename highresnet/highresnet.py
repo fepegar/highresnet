@@ -166,7 +166,7 @@ class DilationBlock(nn.Module):
             batch_norm=True,
             instance_norm=False,
             residual=True,
-            padding_mode=padding_mode,
+            padding_mode='constant',
             ):
         super().__init__()
         self.in_channels = in_channels
@@ -204,7 +204,7 @@ class ResidualBlock(nn.Module):
             instance_norm=False,
             residual=True,
             residual_type='pad',
-            padding_mode=padding_mode,
+            padding_mode='constant',
             ):
         assert residual_type in ('pad', 'project')
         super().__init__()
