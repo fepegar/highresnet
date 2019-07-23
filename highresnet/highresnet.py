@@ -27,7 +27,6 @@ class HighResNet(nn.Module):
             batch_norm=True,
             instance_norm=False,
             residual=True,
-            softmax=True,
             padding_mode='constant',
             add_dropout_layer=False,
             ):
@@ -111,9 +110,6 @@ class HighResNet(nn.Module):
         )
 
         blocks.append(classifier)
-
-        if softmax:
-            blocks.append(nn.Softmax(dim=CHANNELS_DIM))
         self.block = nn.Sequential(*blocks)
 
     def forward(self, x):
