@@ -24,8 +24,8 @@ directly from this repository using [PyTorch hub](https://pytorch.org/hub).
 >>> model_name = 'highres3dnet'
 >>> print(torch.hub.help(repo, model_name))
 
-        HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation
-        pretrained (bool): load parameters from pretrained model
+        "HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation"
+        "pretrained (bool): load parameters from pretrained model"
     
 >>> model = torch.hub.load(repo, model_name, pretrained=True)
 ```
