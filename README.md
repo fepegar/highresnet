@@ -1,5 +1,8 @@
 # HighRes3DNet
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/highresnet.svg)](https://badge.fury.io/py/highresnet)
+
 PyTorch implementation of HighRes3DNet from [Li et al., 2017,
 *On the Compactness, Efficiency, and Representation of
 3D Convolutional Networks: Brain Parcellation as a Pretext Task*][li].
@@ -21,9 +24,10 @@ directly from this repository using [PyTorch hub](https://pytorch.org/hub).
 >>> model_name = 'highres3dnet'
 >>> print(torch.hub.help(repo, model_name))
 
-        "HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation"
+        HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation
+        pretrained (bool): load parameters from pretrained model
     
->>> model = torch.hub.load(repo, model_name, in_channels=1, out_channels=160)
+>>> model = torch.hub.load(repo, model_name, pretrained=True)
 ```
 
 ### `pip`
