@@ -4,7 +4,7 @@
 [![PyPI version](https://badge.fury.io/py/highresnet.svg)](https://badge.fury.io/py/highresnet)
 [![DOI](https://zenodo.org/badge/195385893.svg)](https://zenodo.org/badge/latestdoi/195385893)
 
-PyTorch implementation of HighRes3DNet from [Li et al., 2017,
+PyTorch implementation of HighRes3DNet from [Li et al. 2017,
 *On the Compactness, Efficiency, and Representation of
 3D Convolutional Networks: Brain Parcellation as a Pretext Task*][li].
 
