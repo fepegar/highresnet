@@ -11,6 +11,11 @@ setup(
     description='PyTorch implementation of HighResNet',
     long_description=long_description,
     long_description_content_type='text/markdown',
+    requirements=[
+        'click',
+        'nibabel',
+        'numpy',
+    ],
     url='https://github.com/fepegar/highresnet',
     packages=find_packages(),
     classifiers=[
