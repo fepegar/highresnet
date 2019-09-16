@@ -3,181 +3,111 @@
 
 """Console script for staple."""
 import sys
+from pathlib import Path
 import click
-import numpy as np
 import nibabel as nib
-
-
+from tqdm import tqdm
 try:
     import torch
 except ModuleNotFoundError:
     print('torch not found. Install it with `pip install "torch>=1.2.0"`')
 torch_version = torch.__version__
-if torch_version < '1.2.0':
-    message = 'Minimum torch version required is 1.2.0, you have {}'.format(
+if torch_version < '1.1.0':
+    message = 'Minimum torch version required is 1.1.0, you have {}'.format(
         torch_version
     )
     raise Exception(message)
-from torch.utils.data import Dataset
-
+from torch.utils.data import DataLoader
+from .sampling import GridSampler, GridAggregator
+from .preprocessing import preprocess, crop
 
 @click.command()
-@click.argument('input_file', nargs=1, type=click.Path(exists=True))
-@click.argument('output_file', nargs=1, type=click.Path())
+@click.argument('input_path', nargs=1, type=click.Path(exists=True))
+@click.argument('output_path', nargs=1, type=click.Path())
 @click.option('--border', '-b', default=2)
-@click.option('--volume-padding', '-v', default=10)
-@click.option('--binarize/--probabilities', default=True)
-def main(input_file, output_file, binarize):
-    return 0
+@click.option('--volume-padding', '-p', default=10)
+@click.option('--window-size', '-w', default=128)
+def main(input_path, output_path, border, volume_padding, window_size):
+    nii = nib.load(input_path)
+    data = nii.get_fdata()
+    preprocessed = preprocess(data, volume_padding)
+    labels = run_inference(
+        preprocessed,
+        get_model(),
+        window_size,
+        window_border=border,
+        batch_size=1,
+    )
+    if volume_padding:
+        labels = crop(labels, volume_padding)
+    nib.Nifti1Image(labels, nii.affine).to_filename(output_path)
 
 
-class GridSampler(Dataset):
-    """
-    Adapted from NiftyNet
-    """
-    def __init__(self, image_path, window_size, border):
-        self.array = nib.load(str(image_path)).get_data()
-        self.locations = self.grid_spatial_coordinates(
-            self.array,
-            window_size,
-            border,
-        )
+def run_inference(
+        data,
+        model,
+        window_size,
+        window_border=0,
+        batch_size=2,
+        ):
+    success = False
+    while not success:
+        window_sizes = to_tuple(window_size)
+        window_border = to_tuple(window_border)
 
-    def __len__(self):
-        return len(self.locations)
+        sampler = GridSampler(data, window_sizes, window_border)
+        aggregator = GridAggregator(data, window_border)
+        loader = DataLoader(sampler, batch_size=batch_size)
 
-    def __getitem__(self, index):
-        # Assume 3D
-        location = self.locations[index]
-        i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
-        window = self.array[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin]
-        window = window[np.newaxis, ...]  # add channels dimension
-        sample = dict(
-            image=window,
-            location=location,
-        )
-        return sample
+        device = get_device()
+        model.to(device)
+        model.eval()
 
-    @staticmethod
-    def _enumerate_step_points(starting, ending, win_size, step_size):
-        starting = max(int(starting), 0)
-        ending = max(int(ending), 0)
-        win_size = max(int(win_size), 1)
-        step_size = max(int(step_size), 1)
-        if starting > ending:
-            starting, ending = ending, starting
-        sampling_point_set = []
-        while (starting + win_size) <= ending:
-            sampling_point_set.append(starting)
-            starting = starting + step_size
-        additional_last_point = ending - win_size
-        sampling_point_set.append(max(additional_last_point, 0))
-        sampling_point_set = np.unique(sampling_point_set).flatten()
-        if len(sampling_point_set) == 2:
-            sampling_point_set = np.append(
-                sampling_point_set, np.round(np.mean(sampling_point_set)))
-        _, uniq_idx = np.unique(sampling_point_set, return_index=True)
-        return sampling_point_set[np.sort(uniq_idx)]
+        CHANNELS_DIMENSION = 1
 
-    @staticmethod
-    def grid_spatial_coordinates(array, window_shape, border):
-        shape = array.shape
-        num_dims = len(shape)
-        grid_size = [
-            max(win_size - 2 * border, 0)
-            for (win_size, border)
-            in zip(window_shape, border)
-        ]
-        steps_along_each_dim = [
-            GridSampler._enumerate_step_points(
-                starting=0,
-                ending=shape[i],
-                win_size=window_shape[i],
-                step_size=grid_size[i],
-            )
-            for i in range(num_dims)
-        ]
-        starting_coords = np.asanyarray(np.meshgrid(*steps_along_each_dim))
-        starting_coords = starting_coords.reshape((num_dims, -1)).T
-        n_locations = starting_coords.shape[0]
-        # prepare the output coordinates matrix
-        spatial_coords = np.zeros((n_locations, num_dims * 2), dtype=np.int32)
-        spatial_coords[:, :num_dims] = starting_coords
-        for idx in range(num_dims):
-            spatial_coords[:, num_dims + idx] = \
-                starting_coords[:, idx] + window_shape[idx]
-        max_coordinates = np.max(spatial_coords, axis=0)[num_dims:]
-        assert np.all(max_coordinates <= shape[:num_dims]), \
-            "window size greater than the spatial coordinates {} : {}".format(
-                max_coordinates, shape)
-        return spatial_coords
+        try:
+            with torch.no_grad():
+                for batch in tqdm(loader):
+                    input_tensor = batch['image'].to(device)
+                    locations = batch['location']
+                    logits = model(input_tensor)
+                    labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
+                    outputs = labels
+                    aggregator.add_batch(outputs, locations)
+            success = True
+        except RuntimeError as e:
+            print(e)
+            window_size = int(window_size * 0.75)
+            print('Trying with window size', window_size)
+
+    return aggregator.output_array
 
 
-class GridAggregator:
-    """
-    Adapted from NiftyNet
-    """
-    def __init__(self, reference_image_path, window_border):
-        self.reference_nii = nib.load(str(reference_image_path))
-        self.window_border = window_border
-        self.output_array = np.full(
-            self.reference_nii.shape,
-            fill_value=-1,
-            dtype=np.float32,
-        )
+def get_device():
+    return torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    @staticmethod
-    def crop_batch(windows, location, border=None):
-        if not border:
-            return windows, location
-        location = location.astype(np.int)
-        batch_shape = windows.shape
-        spatial_shape = batch_shape[2:]  # ignore batch and channels dim
-        num_dimensions = 3
-        for idx in range(num_dimensions):
-            location[:, idx] = location[:, idx] + border[idx]
-            location[:, idx + 3] = location[:, idx + 3] - border[idx]
-        if np.any(location < 0):
-            return windows, location
 
-        cropped_shape = np.max(location[:, 3:6] - location[:, 0:3], axis=0)
-        diff = spatial_shape - cropped_shape
-        left = np.floor(diff / 2).astype(np.int)
-        i_ini, j_ini, k_ini = left
-        i_fin, j_fin, k_fin = left + cropped_shape
-        if np.any(left < 0):
-            raise ValueError
-        batch = windows[
-            :,  # batch dimension
-            :,  # channels dimension
-            i_ini:i_fin,
-            j_ini:j_fin,
-            k_ini:k_fin,
-        ]
-        return batch, location
+def to_tuple(value):
+    try:
+        iter(value)
+    except TypeError:
+        value = 3 * (value,)
+    return value
 
-    def add_batch(self, windows, locations):
-        windows = windows.cpu()
-        location_init = np.copy(locations)
-        init_ones = np.ones_like(windows)
-        windows, _ = self.crop_batch(
-            windows, location_init,
-            self.window_border,
-        )
-        location_init = np.copy(locations)
-        _, locations = self.crop_batch(
-            init_ones,
-            location_init,
-            self.window_border,
-        )
-        for window, location in zip(windows, locations):
-            window = window.squeeze()
-            i_ini, j_ini, k_ini, i_fin, j_fin, k_fin = location
-            self.output_array[i_ini:i_fin, j_ini:j_fin, k_ini:k_fin] = window
 
-    def save_current_image(self, output_path):
-        nii = nib.Nifti1Image(self.output_array, self.reference_nii.affine)
-        nii.to_filename(str(output_path))
+def get_model():
+    from highresnet import HighRes3DNet
+    model = HighRes3DNet(
+        in_channels=1,
+        out_channels=160,
+        add_dropout_layer=True,
+    )
+    repo_dir = Path(__file__).parents[1]
+    filename = 'highres3dnet_li_parameters-7d297872.pth'
+    filepath = repo_dir / filename
+    state_dict = torch.load(filepath)
+    model.load_state_dict(state_dict)
+    return model
 
 
 if __name__ == "__main__":

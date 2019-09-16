@@ -3,6 +3,9 @@ from setuptools import setup, find_packages
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
+with open('requirements.txt') as f:
+    requirements = f.readlines()
+
 setup(
     name='highresnet',
     version='0.2.2',
@@ -11,11 +14,7 @@ setup(
     description='PyTorch implementation of HighResNet',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    requirements=[
-        'click',
-        'nibabel',
-        'numpy',
-    ],
+    install_requires=requirements,
     url='https://github.com/fepegar/highresnet',
     packages=find_packages(),
     classifiers=[
@@ -24,4 +23,9 @@ setup(
         'Operating System :: OS Independent',
         'Intended Audience :: Science/Research',
     ],
+    entry_points={
+        'console_scripts': [
+            'deepgif=highresnet.cli:main',
+        ],
+    },
 )
