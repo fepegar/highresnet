@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='highresnet',
-    version='0.3.4',
+    version='0.3.5',
     author='Fernando Perez-Garcia',
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
     description='PyTorch implementation of HighResNet',
@@ -29,9 +29,5 @@ setup(
         'console_scripts': [
             'deepgif=highresnet.cli:main',
         ],
-    },
-    include_package_data=True,
-    package_data={
-        'highresnet': ['data/highres3dnet_li_parameters-7d297872.pth'],
     },
 )

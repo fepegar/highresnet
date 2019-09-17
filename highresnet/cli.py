@@ -3,7 +3,6 @@
 
 """Console script for staple."""
 import sys
-from pathlib import Path
 import click
 import nibabel as nib
 from tqdm import tqdm
@@ -100,17 +99,13 @@ def to_tuple(value):
 
 
 def get_model():
-    from highresnet import HighRes3DNet
-    model = HighRes3DNet(
-        in_channels=1,
-        out_channels=160,
-        add_dropout_layer=True,
-    )
-    data_dir = Path(__file__).parent / 'data'
-    filename = 'highres3dnet_li_parameters-7d297872.pth'
-    filepath = data_dir / filename
-    state_dict = torch.load(filepath)
-    model.load_state_dict(state_dict)
+    """
+    Using PyTorch Hub as I haven't been able to install the .pth file
+    within the pip package
+    """
+    repo = 'fepegar/highresnet'
+    model_name = 'highres3dnet'
+    model = torch.hub.load(repo, model_name, pretrained=True)
     return model
 
 
