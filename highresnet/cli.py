@@ -10,11 +10,12 @@ from tqdm import tqdm
 try:
     import torch
 except ModuleNotFoundError:
-    print('torch not found. Install it with `pip install "torch>=1.2.0"`')
+    print('torch not found. Install it running "pip install torch"')
 torch_version = torch.__version__
 if torch_version < '1.1.0':
-    message = 'Minimum torch version required is 1.1.0, you have {}'.format(
-        torch_version
+    message = (
+        'Minimum torch version required is 1.1.0'
+        ' but you are using {}'.format(torch_version)
     )
     raise Exception(message)
 from torch.utils.data import DataLoader
