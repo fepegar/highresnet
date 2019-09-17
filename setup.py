@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='highresnet',
-    version='0.3.5',
+    version='0.3.6',
     author='Fernando Perez-Garcia',
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
     description='PyTorch implementation of HighResNet',
