@@ -106,9 +106,9 @@ def get_model():
         out_channels=160,
         add_dropout_layer=True,
     )
-    repo_dir = Path(__file__).parents[1]
+    data_dir = Path(__file__).parent / 'data'
     filename = 'highres3dnet_li_parameters-7d297872.pth'
-    filepath = repo_dir / filename
+    filepath = data_dir / filename
     state_dict = torch.load(filepath)
     model.load_state_dict(state_dict)
     return model
