@@ -8,7 +8,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='highresnet',
-    version='0.2.2',
+    version='0.3.0',
     author='Fernando Perez-Garcia',
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
     description='PyTorch implementation of HighResNet',
