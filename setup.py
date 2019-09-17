@@ -3,18 +3,20 @@ from setuptools import setup, find_packages
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
-with open('requirements.txt') as f:
-    requirements = f.readlines()
-
 setup(
     name='highresnet',
-    version='0.3.0',
+    version='0.3.1',
     author='Fernando Perez-Garcia',
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
     description='PyTorch implementation of HighResNet',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    install_requires=requirements,
+    install_requires=[
+        'click',
+        'nibabel',
+        'numpy',
+        'tqdm',
+    ],
     url='https://github.com/fepegar/highresnet',
     packages=find_packages(),
     classifiers=[
