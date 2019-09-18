@@ -4,6 +4,7 @@
 """Console script for staple."""
 import sys
 import click
+import numpy as np
 import nibabel as nib
 from tqdm import tqdm
 try:
@@ -72,6 +73,7 @@ def main(
     Larger window size values take more memory but produces better results.
     """
     nii = nib.load(input_path)
+    check_header(nii)
     data = nii.get_fdata()
     preprocessed = preprocess(data, volume_padding)
     labels = run_inference(
@@ -126,6 +128,27 @@ def run_inference(
             print('Trying with window size', window_size)
 
     return aggregator.output_array
+
+
+def check_header(nifti_image):
+    orientation = ''.join(nib.aff2axcodes(nifti_image.affine))
+    spacing = nifti_image.header.get_zooms()
+    one_iso = 1, 1, 1
+    if orientation != 'RAS':
+        exception_message = (
+            'The input image seems to be in {} orientation.'
+            '\nOnly images in RAS orientation'
+            ' are supported for now'.format(orientation)
+        )
+    elif not np.allclose(spacing, one_iso):
+        exception_message = (
+            'The input image spacing seems to be {}.'
+            '\nOnly 1 x 1 x 1 mm spacing'
+            ' is supported for now'.format(str(spacing))
+        )
+    else:
+        return
+    raise NotImplementedError(exception_message)
 
 
 def get_device(cuda_device=0):
