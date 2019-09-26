@@ -134,25 +134,29 @@ def check_header(nifti_image):
     orientation = ''.join(nib.aff2axcodes(nifti_image.affine))
     spacing = nifti_image.header.get_zooms()
     one_iso = 1, 1, 1
+    exception_messages = []
     if orientation != 'RAS':
         exception_message = (
             'The input image seems to be in {} orientation.'
             '\nOnly images in RAS orientation'
             ' are supported for now'.format(orientation)
         )
-    elif not np.allclose(spacing, one_iso):
+        exception_messages.append(exception_message)
+    if not np.allclose(spacing, one_iso):
         exception_message = (
             'The input image spacing seems to be {}.'
             '\nOnly 1 x 1 x 1 mm spacing'
             ' is supported for now'.format(str(spacing))
         )
-    else:
-        return
-    raise NotImplementedError(exception_message)
+        exception_messages.append(exception_message)
+    if exception_messages:
+        exception_message = '\n'.join(exception_messages)
+        raise NotImplementedError(exception_message)
 
 
 def get_device(cuda_device=0):
-    return torch.device(f'cuda:{cuda_device}' if torch.cuda.is_available() else 'cpu')
+    return torch.device(
+        'cuda:{}'.format(cuda_device) if torch.cuda.is_available() else 'cpu')
 
 
 def to_tuple(value):
