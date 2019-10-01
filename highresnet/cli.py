@@ -20,7 +20,7 @@ if torch_version < '1.1.0':
     raise Exception(message)
 from torch.utils.data import DataLoader
 from .sampling import GridSampler, GridAggregator
-from .preprocessing import preprocess, crop
+from .preprocessing import preprocess, crop, resample_ras_1mm_iso
 
 @click.command()
 @click.argument('input_path', nargs=1, type=click.Path(exists=True))
@@ -73,7 +73,9 @@ def main(
     Larger window size values take more memory but produces better results.
     """
     nii = nib.load(input_path)
-    check_header(nii)
+    needs_resampling = check_header(nii)
+    if needs_resampling:
+        nii = resample_ras_1mm_iso(nii)
     data = nii.get_fdata()
     preprocessed = preprocess(data, volume_padding)
     labels = run_inference(
@@ -135,23 +137,8 @@ def check_header(nifti_image):
     spacing = nifti_image.header.get_zooms()
     one_iso = 1, 1, 1
     exception_messages = []
-    if orientation != 'RAS':
-        exception_message = (
-            'The input image seems to be in {} orientation.'
-            '\nOnly images in RAS orientation'
-            ' are supported for now'.format(orientation)
-        )
-        exception_messages.append(exception_message)
-    if not np.allclose(spacing, one_iso):
-        exception_message = (
-            'The input image spacing seems to be {}.'
-            '\nOnly 1 x 1 x 1 mm spacing'
-            ' is supported for now'.format(str(spacing))
-        )
-        exception_messages.append(exception_message)
-    if exception_messages:
-        exception_message = '\n'.join(exception_messages)
-        raise NotImplementedError(exception_message)
+    needs_resampling = orientation != 'RAS' or not np.allclose(spacing, one_iso)
+    return needs_resampling
 
 
 def get_device(cuda_device=0):

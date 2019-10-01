@@ -1,4 +1,7 @@
+import tempfile
 import numpy as np
+import nibabel as nib
+import SimpleITK as sitk
 from .histogram import normalize
 
 # From NiftyNet model zoo
@@ -42,3 +45,77 @@ def whiten(data):
 
 def mean_plus(data):
     return data > data.mean()
+
+
+def resample_spacing(nifti, output_spacing, interpolation):
+    output_spacing = tuple(output_spacing)
+    with tempfile.NamedTemporaryFile(suffix='.nii') as f:
+        nifti.to_filename(f.name)
+        image = sitk.ReadImage(f.name)
+
+        output_spacing = np.array(output_spacing)
+        output_spacing = tuple(output_spacing)
+
+        reference_spacing = np.array(image.GetSpacing())
+        reference_size = np.array(image.GetSize())
+
+        output_size = reference_spacing / output_spacing * reference_size
+        output_size = np.round(output_size).astype(np.uint32)
+        # tuple(output_size) does not work, see
+        # https://github.com/Radiomics/pyradiomics/issues/204
+        output_size = output_size.tolist()
+
+        identity = sitk.Transform(3, sitk.sitkIdentity)
+
+        resample = sitk.ResampleImageFilter()
+        resample.SetInterpolator(interpolation)
+        resample.SetOutputDirection(image.GetDirection())
+        resample.SetOutputOrigin(image.GetOrigin())  # TODO: double-check that this is correct
+        resample.SetOutputPixelType(image.GetPixelID())
+        resample.SetOutputSpacing(output_spacing)
+        resample.SetSize(output_size)
+        resample.SetTransform(identity)
+        resampled = resample.Execute(image)
+        sitk.WriteImage(resampled, f.name)
+        nifti_resampled = nib.load(f.name)
+        nifti_resampled.get_data()  # to move the data to memory, as it's a temp file
+    return nifti_resampled
+
+
+def resample_ras_1mm_iso(nifti, interpolation=None):
+    if interpolation is None:
+        interpolation = sitk.sitkLinear
+    nii_ras = nib.as_closest_canonical(nifti)
+    spacing = nii_ras.header.get_zooms()
+    one_iso = 1, 1, 1
+    if np.allclose(spacing, one_iso):
+        return nii_ras
+    nii_resampled = resample_spacing(
+        nii_ras,
+        output_spacing=one_iso,
+        interpolation=interpolation,
+    )
+    return nii_resampled
+
+
+def resample_to_reference(
+        reference_path,
+        floating_path,
+        result_path,
+        interpolation=None,
+        default_value=0.0,
+        ):
+    if interpolation is None:
+        interpolation = sitk.sitkNearestNeighbor
+    reference = sitk.ReadImage(str(reference_path))
+    floating = sitk.ReadImage(str(floating_path))
+    transform = sitk.Transform(3, sitk.sitkIdentity)
+    resampled = sitk.Resample(
+        floating,
+        reference,
+        transform,
+        interpolation,
+        default_value,
+        floating.GetPixelID(),
+    )
+    sitk.WriteImage(resampled, result_path)
