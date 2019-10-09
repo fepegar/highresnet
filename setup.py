@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='highresnet',
-    version='0.4.0',
+    version='0.4.1',
     author='Fernando Perez-Garcia',
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
     description='PyTorch implementation of HighResNet',
@@ -15,6 +15,7 @@ setup(
         'click',
         'nibabel',
         'numpy',
+        'SimpleITK',
         'tqdm',
     ],
     url='https://github.com/fepegar/highresnet',
