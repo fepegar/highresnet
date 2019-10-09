@@ -20,7 +20,12 @@ if torch_version < '1.1.0':
     raise Exception(message)
 from torch.utils.data import DataLoader
 from .sampling import GridSampler, GridAggregator
-from .preprocessing import preprocess, crop, resample_ras_1mm_iso
+from .preprocessing import (
+    crop,
+    preprocess,
+    resample_ras_1mm_iso,
+    resample_to_reference,
+)
 
 @click.command()
 @click.argument('input_path', nargs=1, type=click.Path(exists=True))
@@ -90,6 +95,14 @@ def main(
         labels = crop(labels, volume_padding)
     nib.Nifti1Image(labels, nii.affine).to_filename(output_path)
 
+    # Resample parcellation to original dimensions
+    if needs_resampling:
+        resample_to_reference(
+            reference_path=input_path,
+            floating_path=output_path,
+            result_path=output_path,
+        )
+
 
 def run_inference(
         data,
@@ -136,8 +149,13 @@ def check_header(nifti_image):
     orientation = ''.join(nib.aff2axcodes(nifti_image.affine))
     spacing = nifti_image.header.get_zooms()
     one_iso = 1, 1, 1
-    exception_messages = []
-    needs_resampling = orientation != 'RAS' or not np.allclose(spacing, one_iso)
+    is_ras = orientation == 'RAS'
+    if not is_ras:
+        print(f'Detected orientation: {orientation}. Reorienting to RAS...')
+    is_1_iso = np.allclose(spacing, one_iso)
+    if not is_1_iso:
+        print(f'Detected spacing: {spacing}. Resampling to 1 mm iso...')
+    needs_resampling = not is_ras or not is_1_iso
     return needs_resampling
 
 

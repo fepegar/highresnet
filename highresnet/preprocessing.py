@@ -1,4 +1,5 @@
 import tempfile
+from pathlib import Path
 import numpy as np
 import nibabel as nib
 import SimpleITK as sitk
@@ -49,36 +50,39 @@ def mean_plus(data):
 
 def resample_spacing(nifti, output_spacing, interpolation):
     output_spacing = tuple(output_spacing)
-    with tempfile.NamedTemporaryFile(suffix='.nii') as f:
-        nifti.to_filename(f.name)
-        image = sitk.ReadImage(f.name)
+    temp_dir = Path(tempfile.gettempdir()) / '.deepgif'
+    temp_dir.mkdir(exist_ok=True)
+    temp_path = temp_dir / 'deepgif_resampled.nii'
+    temp_path = str(temp_path)
 
-        output_spacing = np.array(output_spacing)
-        output_spacing = tuple(output_spacing)
+    nifti.to_filename(temp_path)
+    image = sitk.ReadImage(temp_path)
 
-        reference_spacing = np.array(image.GetSpacing())
-        reference_size = np.array(image.GetSize())
+    output_spacing = np.array(output_spacing).astype(float)
+    output_spacing = tuple(output_spacing)
 
-        output_size = reference_spacing / output_spacing * reference_size
-        output_size = np.round(output_size).astype(np.uint32)
-        # tuple(output_size) does not work, see
-        # https://github.com/Radiomics/pyradiomics/issues/204
-        output_size = output_size.tolist()
+    reference_spacing = np.array(image.GetSpacing())
+    reference_size = np.array(image.GetSize())
 
-        identity = sitk.Transform(3, sitk.sitkIdentity)
+    output_size = reference_spacing / output_spacing * reference_size
+    output_size = np.round(output_size).astype(np.uint32)
+    # tuple(output_size) does not work, see
+    # https://github.com/Radiomics/pyradiomics/issues/204
+    output_size = output_size.tolist()
 
-        resample = sitk.ResampleImageFilter()
-        resample.SetInterpolator(interpolation)
-        resample.SetOutputDirection(image.GetDirection())
-        resample.SetOutputOrigin(image.GetOrigin())  # TODO: double-check that this is correct
-        resample.SetOutputPixelType(image.GetPixelID())
-        resample.SetOutputSpacing(output_spacing)
-        resample.SetSize(output_size)
-        resample.SetTransform(identity)
-        resampled = resample.Execute(image)
-        sitk.WriteImage(resampled, f.name)
-        nifti_resampled = nib.load(f.name)
-        nifti_resampled.get_data()  # to move the data to memory, as it's a temp file
+    identity = sitk.Transform(3, sitk.sitkIdentity)
+
+    resample = sitk.ResampleImageFilter()
+    resample.SetInterpolator(interpolation)
+    resample.SetOutputDirection(image.GetDirection())
+    resample.SetOutputOrigin(image.GetOrigin())  # TODO: double-check that this is correct
+    resample.SetOutputPixelType(image.GetPixelID())
+    resample.SetOutputSpacing(output_spacing)
+    resample.SetSize(output_size)
+    resample.SetTransform(identity)
+    resampled = resample.Execute(image)
+    sitk.WriteImage(resampled, temp_path)
+    nifti_resampled = nib.load(temp_path)
     return nifti_resampled
 
 
