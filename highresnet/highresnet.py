@@ -304,7 +304,7 @@ class ConvolutionalBlock(nn.Module):
 
         if preactivation:
             if batch_norm or instance_norm:
-                layers.append(norm_class(in_channels))
+                layers.append(norm_class(in_channels, affine=True))
             if activation:
                 layers.append(nn.ReLU())
 
@@ -323,7 +323,7 @@ class ConvolutionalBlock(nn.Module):
 
         if not preactivation:
             if batch_norm or instance_norm:
-                layers.append(norm_class(out_channels))
+                layers.append(norm_class(out_channels, affine=True))
             if activation:
                 layers.append(nn.ReLU())
 
