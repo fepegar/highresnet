@@ -9,7 +9,7 @@ $ NII_FILE=`download_oasis`
 $ deepgif $NII_FILE
 ```
 
-![3D Slicer screenshot](images/slicer_screenshot.png)
+![3D Slicer screenshot](https://media.githubusercontent.com/media/fepegar/highresnet/master/images/slicer_screenshot.png)
 
 PyTorch implementation of HighRes3DNet from [Li et al. 2017,
 *On the Compactness, Efficiency, and Representation of
