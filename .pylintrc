@@ -4,3 +4,10 @@
 # system, and so shouldn't trigger E1101 when accessed. Python regular
 # expressions are accepted.
 generated-members=numpy.*,torch.*
+
+ignored-classes=PurePath
+
+
+[MESSAGES CONTROL]
+disable=
+  arguments-differ,

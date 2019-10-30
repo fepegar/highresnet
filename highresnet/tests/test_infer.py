@@ -30,3 +30,4 @@ def download_data(data_url):
 
 def test_infer():
     image_path = download_data(get_data_url_from_model_zoo())
+    # TODO
