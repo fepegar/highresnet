@@ -9,17 +9,6 @@ import sitkUtils as su
 from slicer.ScriptedLoadableModule import *
 
 
-try:
-  import tqdm
-  import torch
-  import nibabel
-except ImportError:
-  slicer.util.pip_install('highresnet')
-  slicer.util.pip_install('torch>=1.2')  # for PyTorch Hub
-import tqdm
-import torch
-import nibabel
-
 
 class DeepGIF(ScriptedLoadableModule):
 
@@ -49,7 +38,6 @@ class DeepGIFWidget(ScriptedLoadableModuleWidget):
 
     parametersFormLayout = qt.QFormLayout(parametersCollapsibleButton)
 
-
     self.applyButton = qt.QPushButton("Apply")
     self.applyButton.toolTip = "Run the algorithm."
     self.applyButton.enabled = False
@@ -72,38 +60,14 @@ class DeepGIFWidget(ScriptedLoadableModuleWidget):
 class DeepGIFLogic(ScriptedLoadableModuleLogic):
 
   def segment(self, inputVolumeNode):
-    needsResampling = self.checkHeader(inputVolumeNode)
-    volumeNode = inputVolumeNode
-    if needsResampling:
-      volumeNode = self.resampleIsoRas(volumeNode)
+    self.ensureLibraries()
 
-  def checkHeader(self, volumeNode):
-    matrix = vtk.vtkMatrix4x4()
-    volumeNode.GetIJKToRASMatrix(matrix)
-    affine = sllicer.util.arrayFromVTKMatrix(matrix)
-    orientation = ''.join(nib.aff2axcodes(affine))
-    spacing = volumeNode.GetSpacing()
-    oneIso = 1, 1, 1
-    isRAS = orientation == 'RAS'
-    if not isRAS:
-        print(f'Detected orientation: {orientation}. Reorienting to RAS...')
-    isIso1 = np.allclose(spacing, oneIso)
-    if not isIso1:
-        print(f'Detected spacing: {spacing}. Resampling to 1 mm iso...')
-    needsResampling = not isRAS or not isIso1
-    return needsResampling
-
-  def resampleIsoRas(self, volumeNode):
-    volumeNode = self.toRAS(volumeNode)
-    volumeNode = self.toIso(volumeNode)
-    return volumeNode
-
-  def toRAS(self, volumeNode):
-    pass
-
-  def toIso(self, volumeNode):
-    pass
-
+  def ensureLibraries(self):
+    try:
+      import highresnet
+    except ImportError:
+      slicer.util.pip_install('torch>=1.2')  # for PyTorch Hub
+      slicer.util.pip_install('highresnet')
 
 
 class DeepGIFTest(ScriptedLoadableModuleTest):
@@ -145,5 +109,5 @@ class DeepGIFTest(ScriptedLoadableModuleTest):
     self.delayDisplay('Finished with download and loading')
 
     logic = DeepGIFLogic()
-    labelMapNode = logic.segment(volumeNode)
+    segmentationNode = logic.segment(volumeNode)
     self.delayDisplay('Test passed!')
