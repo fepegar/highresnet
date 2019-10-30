@@ -20,7 +20,7 @@ def infer(
         window_size,
         cuda_device,
         ):
-    nii = nib.load(input_path)
+    nii = nib.load(str(input_path))
     needs_resampling = check_header(nii)
     if needs_resampling:
         nii = resample_ras_1mm_iso(nii)
@@ -36,7 +36,7 @@ def infer(
     )
     if volume_padding:
         labels = crop(labels, volume_padding)
-    nib.Nifti1Image(labels, nii.affine).to_filename(output_path)
+    nib.Nifti1Image(labels, nii.affine).to_filename(str(output_path))
 
     # Resample parcellation to original dimensions
     if needs_resampling:
@@ -82,8 +82,9 @@ def run_inference(
             success = True
         except RuntimeError as e:
             print(e)
+            print('Window size', window_size, 'is too large.')
             window_size = int(window_size * 0.75)
-            print('Trying with window size', window_size)
+            print('Trying with smaller window size', window_size)
 
     return aggregator.output_array
 

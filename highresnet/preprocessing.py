@@ -122,4 +122,4 @@ def resample_to_reference(
         default_value,
         floating.GetPixelID(),
     )
-    sitk.WriteImage(resampled, result_path)
+    sitk.WriteImage(resampled, str(result_path))

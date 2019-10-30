@@ -28,7 +28,8 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'deepgif=highresnet.cli:main',
+            'deepgif=highresnet.cli.deepgif:main',
+            'download_oasis=highresnet.cli.download_oasis:main',
         ],
     },
 )

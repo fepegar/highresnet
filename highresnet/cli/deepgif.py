@@ -4,11 +4,14 @@
 
 import sys
 import click
+import pathlib
 
 
 @click.command()
 @click.argument('input_path', nargs=1, type=click.Path(exists=True))
-@click.argument('output_path', nargs=1, type=click.Path())
+@click.option('--output_path', '-o',
+    type=click.Path(),
+)
 @click.option(
     '--batch-size', '-b',
     default=1, type=int,
@@ -57,6 +60,11 @@ def main(
     Larger window size values take more memory but produces better results.
     """
     from highresnet.inference import infer
+    if output_path is None:
+        input_path = pathlib.Path(input_path)
+        input_name = input_path.name
+        output_name = input_name.replace('.nii', '_seg.nii')
+        output_path = input_path.parent / output_name
     infer(
         input_path,
         output_path,
