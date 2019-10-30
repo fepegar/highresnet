@@ -38,6 +38,10 @@ class DeepGIFWidget(ScriptedLoadableModuleWidget):
 
     parametersFormLayout = qt.QFormLayout(parametersCollapsibleButton)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 64efae71168a43a093a6a1f7645f85f2e09ec4f9
     self.applyButton = qt.QPushButton("Apply")
     self.applyButton.toolTip = "Run the algorithm."
     self.applyButton.enabled = False
@@ -109,5 +113,9 @@ class DeepGIFTest(ScriptedLoadableModuleTest):
     self.delayDisplay('Finished with download and loading')
 
     logic = DeepGIFLogic()
+<<<<<<< HEAD
     segmentationNode = logic.segment(volumeNode)
+=======
+    labelMapNode = logic.segment(volumeNode)
+>>>>>>> 64efae71168a43a093a6a1f7645f85f2e09ec4f9
     self.delayDisplay('Test passed!')
