@@ -39,11 +39,13 @@ import pathlib
     '--cuda-device', '-d',
     default=0, type=int,
     show_default=True,
+    help='select which CUDA device (GPU) to use'
 )
 @click.option(
     '--hist-niftynet/--normal', '-h',
     default=False,
     show_default=True,
+    help='use the volume mean as threshold for the histogram standardization'
 )
 def main(
         input_path,
