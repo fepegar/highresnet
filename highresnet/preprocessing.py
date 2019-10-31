@@ -10,9 +10,9 @@ LI_LANDMARKS = "4.4408920985e-16 8.06305571158 15.5085721044 18.7007018006 21.50
 LI_LANDMARKS = np.array([float(n) for n in LI_LANDMARKS.split()])
 
 
-def preprocess(data, padding):
+def preprocess(data, padding, hist_masking_function=None):
     # data = pad(data, padding)
-    data = standardize(data, masking_function=None)
+    data = standardize(data, masking_function=hist_masking_function)
     data = whiten(data)
     data = data.astype(np.float32)
     data = pad(data, padding)  # should I pad at the beginning instead?
@@ -30,13 +30,14 @@ def crop(data, padding):
     return data[p:-p, p:-p, p:-p]
 
 
-def standardize(data, landmarks=LI_LANDMARKS, masking_function='mean_plus'):
-    masking_function = mean_plus if masking_function == 'mean_plus' else None
+def standardize(data, landmarks=LI_LANDMARKS, masking_function=None):
     return normalize(data, landmarks, masking_function=masking_function)
 
 
-def whiten(data):
-    mask_data = mean_plus(data)
+def whiten(data, masking_function=None):
+    if masking_function is None:
+        masking_function = mean_plus
+    mask_data = masking_function(data)
     values = data[mask_data]
     mean, std = values.mean(), values.std()
     data -= mean

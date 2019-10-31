@@ -40,6 +40,11 @@ import pathlib
     default=0, type=int,
     show_default=True,
 )
+@click.option(
+    '--hist-niftynet/--normal', '-h',
+    default=False,
+    show_default=True,
+)
 def main(
         input_path,
         output_path,
@@ -48,6 +53,7 @@ def main(
         volume_padding,
         window_size,
         cuda_device,
+        hist_niftynet,
         ):
     """
     Parcellation of T1-weighted brain MRI using HighRes3DNet
@@ -73,6 +79,7 @@ def main(
         volume_padding,
         window_size,
         cuda_device,
+        use_niftynet_hist_std=hist_niftynet,
     )
 
 

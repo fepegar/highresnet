@@ -9,6 +9,7 @@ from .preprocessing import (
     preprocess,
     resample_ras_1mm_iso,
     resample_to_reference,
+    mean_plus,
 )
 
 def infer(
@@ -19,13 +20,24 @@ def infer(
         volume_padding,
         window_size,
         cuda_device,
+        use_niftynet_hist_std=False,
         ):
+    # Read image
     nii = nib.load(str(input_path))
     needs_resampling = check_header(nii)
     if needs_resampling:
         nii = resample_ras_1mm_iso(nii)
     data = nii.get_fdata()
-    preprocessed = preprocess(data, volume_padding)
+
+    # Preprocessing
+    hist_masking_function = mean_plus if use_niftynet_hist_std else None
+    preprocessed = preprocess(
+        data,
+        volume_padding,
+        hist_masking_function=hist_masking_function,
+    )
+
+    # Inference
     labels = run_inference(
         preprocessed,
         get_model(),
@@ -34,6 +46,8 @@ def infer(
         batch_size=batch_size,
         cuda_device=cuda_device,
     )
+
+    # Postprocessing
     if volume_padding:
         labels = crop(labels, volume_padding)
     nib.Nifti1Image(labels, nii.affine).to_filename(str(output_path))
