@@ -40,10 +40,10 @@ in `my submission to the MICCAI Educational Challenge
 
 
 Usage
-=====
+-----
 
 Command line interface
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: shell
 
@@ -53,7 +53,7 @@ Command line interface
 
 
 `PyTorch Hub <https://pytorch.org/hub>`_
-----------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you are using `pytorch>=1.1.0`, you can import the model
 directly from this repository using
@@ -71,10 +71,10 @@ directly from this repository using
    >>>
 
 Installation
-============
+------------
 
 1. Create a `conda <https://docs.conda.io/en/latest/>`_ environment (recommended)
----------------------------------------------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: shell
 
@@ -83,7 +83,7 @@ Installation
    conda activate $ENVNAME
 
 2. Install PyTorch and `highresnet`
------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Within the `conda` environment:
 
@@ -100,7 +100,7 @@ Now you can do
    >>>
 
 Credits
-=======
+-------
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
