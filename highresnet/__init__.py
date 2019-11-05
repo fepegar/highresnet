@@ -24,4 +24,5 @@ if torch_version < '1.1':
     print(INSTALL)
     sys.exit(1)
 
+from . import cli
 from .modules.highresnet import *
