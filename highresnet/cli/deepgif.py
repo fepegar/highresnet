@@ -42,10 +42,16 @@ import pathlib
     help='select which CUDA device (GPU) to use'
 )
 @click.option(
-    '--hist-niftynet/--normal', '-h',
+    '--hist-niftynet/--hist-normal', '-h',
     default=False,
     show_default=True,
     help='use the volume mean as threshold for the histogram standardization'
+)
+@click.option(
+    '--flip/--no-flip', '-f',
+    default=False,
+    show_default=True,
+    help='infer also a L-R flipped version of the image and use the mean'
 )
 def main(
         input_path,
@@ -56,6 +62,7 @@ def main(
         window_size,
         cuda_device,
         hist_niftynet,
+        flip,
         ):
     """
     Parcellation of T1-weighted brain MRI using HighRes3DNet
@@ -82,6 +89,7 @@ def main(
         window_size,
         cuda_device,
         use_niftynet_hist_std=hist_niftynet,
+        flip=flip,
     )
 
 
