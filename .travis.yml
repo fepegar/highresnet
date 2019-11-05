@@ -1,0 +1,18 @@
+language: python
+python:
+- 3.8
+- 3.7
+- 3.6
+- 3.5
+install: pip install -U tox-travis
+script: tox
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: fepegar
+  password:
+    secure: Vk+FnWgL96ygn2IknMxGnqpKRj8Y01wxHfj4SiNTxv3k67XhfpQc5jng5QL7fEaBbGcLXUEZCT/I7xhTAr7BINvWtSU+OtYss8vS7ZvaWeSGM9U5HqWQrCVYAImxfUGB9fNHoT0bxXpKSM8yF1Z6aYRq4YNLAAvGimz8pSU7HmAi0wDqZODuJazBtY5ymU5q21OlIC1fep+dRLboS2yj8k/oQLbEAvMiKv1q2Vjd4RxDkgtbsQWtPIvIfi9lIIJy1P2BWsy2XqO0jv/z6qT/TJgr7s2z+se0vSlnSFgCqX9ewBuiGofkSBdsZDx0NOrmA2tmKdsrD2t+yVFSCK4IxvK1A7Laz0I/CQQFQQf4Eu0o2P+m+mvzbVVIZvmWCdV1tK+XOZlSkp7x3eKKgsz+lzdsxhnOIlUdSvRy5frWHHY0wVUoPEmWjtD3tnG67iL9x2QM8oItgxH5UajWYjOxi8LSyNVGEEvyILiABrliFL9WMqJSTsykf1GQNhaQkAp9D3x6iYvXh9iW71WKqB7x7yIMByajJKaPXaqS1bOZlCIhnXMeM7Vz4dEiXXZoVN5ofSXbztPxq6R0JT1Y7YV8U0snIH1CDxcnKXAMsyJ/LjdJYJS9Apfttp509A2142NCAr8tMscl+lYDQWIIP9e5vtGCjpjv99Whns5vKpVOIOU=
+  on:
+    tags: true
+    repo: fepegar/highresnet
+    python: 3.8

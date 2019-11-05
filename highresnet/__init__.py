@@ -1,5 +1,13 @@
+# -*- coding: utf-8 -*-
+
+"""Top-level package for highresnet."""
+
+__author__ = """Fernando Perez-Garcia"""
+__email__ = 'fernando.perezgarcia.17@ucl.ac.uk'
+__version__ = '0.7.1'
+
 import sys
-INSTALL = '\nInstall it by running:\npip install "torch>=1.2"'
+INSTALL = '\nInstall it by running:\npip install "torch>=1.1"'
 try:
     import torch
 except ModuleNotFoundError:
@@ -7,9 +15,9 @@ except ModuleNotFoundError:
     print(INSTALL)
     sys.exit(1)
 torch_version = torch.__version__
-if torch_version < '1.2':
+if torch_version < '1.1':
     message = (
-        'Minimum torch version required is 1.2.0'
+        'Minimum torch version required is 1.1.0'
         ' but you are using {}'.format(torch_version)
     )
     print(message)

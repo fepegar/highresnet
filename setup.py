@@ -1,35 +1,61 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""The setup script."""
+
 from setuptools import setup, find_packages
 
-with open('README.md', 'r') as fh:
-    long_description = fh.read()
+with open('README.rst') as readme_file:
+    readme = readme_file.read()
+
+with open('HISTORY.rst') as history_file:
+    history = history_file.read()
+
+requirements = [
+    'Click>=7.0',
+    'nibabel',
+    'numpy',
+    'SimpleITK',
+    'tqdm',
+]
+
+setup_requirements = []
+
+test_requirements = []
 
 setup(
-    name='highresnet',
-    version='0.7.1',
     author='Fernando Perez-Garcia',
     author_email='fernando.perezgarcia.17@ucl.ac.uk',
-    description='PyTorch implementation of HighResNet',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
-    install_requires=[
-        'click',
-        'nibabel',
-        'numpy',
-        'SimpleITK',
-        'tqdm',
-    ],
-    url='https://github.com/fepegar/highresnet',
-    packages=find_packages(),
+    python_requires='>=3.5',
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Intended Audience :: Science/Research',
+        'Natural Language :: English',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
+    description='PyTorch implementation of HighRes3DNet',
     entry_points={
         'console_scripts': [
             'deepgif=highresnet.cli.deepgif:main',
             'download_oasis=highresnet.cli.download_oasis:main',
         ],
     },
+    install_requires=requirements,
+    license="MIT license",
+    long_description=readme + '\n\n' + history,
+    include_package_data=True,
+    keywords='highresnet',
+    name='highresnet',
+    packages=find_packages(include=['highresnet', 'highresnet.*']),
+    setup_requires=setup_requirements,
+    test_suite='tests',
+    tests_require=test_requirements,
+    url='https://github.com/fepegar/highresnet',
+    version='0.7.1',
+    zip_safe=False,
 )
