@@ -53,6 +53,11 @@ import pathlib
     show_default=True,
     help='infer also a L-R flipped version of the image and use the mean'
 )
+@click.option(
+    '--output-probabilities-dir', '-m',
+    type=click.Path(),
+    help='output probabilities for each class (for CRF)'
+)
 def main(
         input_path,
         output_path,
@@ -63,6 +68,7 @@ def main(
         cuda_device,
         hist_niftynet,
         flip,
+        output_probabilities_dir,
         ):
     """
     Parcellation of T1-weighted brain MRI using HighRes3DNet
@@ -90,6 +96,7 @@ def main(
         cuda_device,
         use_niftynet_hist_std=hist_niftynet,
         flip=flip,
+        output_probabilities_dir=output_probabilities_dir,
     )
 
 

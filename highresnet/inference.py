@@ -26,6 +26,7 @@ def infer(
         cuda_device,
         use_niftynet_hist_std=False,
         flip=False,
+        output_probabilities_dir=None,
         ):
     # Read image
     nii = nib.load(str(input_path))
@@ -51,6 +52,7 @@ def infer(
         batch_size=batch_size,
         cuda_device=cuda_device,
         flip=flip,
+        output_probabilities_dir=output_probabilities_dir,
     )
 
     # Postprocessing
@@ -75,7 +77,13 @@ def run_inference(
         batch_size=2,
         cuda_device=0,
         flip=False,
+        output_probabilities_dir=None,
         ):
+    if flip and output_probabilities_dir is not None:
+        raise NotImplementedError(
+            'Flip and output probabilities not implemented yet.'
+            ' It might use too much memory'
+        )
     success = False
     while not success:
         window_sizes = to_tuple(window_size)
