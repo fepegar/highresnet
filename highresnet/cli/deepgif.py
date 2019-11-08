@@ -19,13 +19,13 @@ import pathlib
 )
 @click.option(
     '--window-cropping', '-c',
-    default=16, type=int,
+    default=2, type=int,
     show_default=True,
     help='cropping size of each output window',
 )
 @click.option(
     '--volume-padding', '-p',
-    default=16, type=int,
+    default=10, type=int,
     show_default=True,
     help='padding size of the input volume'
 )
@@ -42,7 +42,7 @@ import pathlib
     help='select which CUDA device (GPU) to use'
 )
 @click.option(
-    '--hist-niftynet/--normal', '-h',
+    '--hist-niftynet/--hist-normal', '-h',
     default=False,
     show_default=True,
     help='use the volume mean as threshold for the histogram standardization'
