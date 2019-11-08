@@ -12,10 +12,6 @@ from .preprocessing import (
     mean_plus,
 )
 
-CHANNELS_DIMENSION = 1
-LR_DIMENSION = 2
-
-
 def infer(
         input_path,
         output_path,
@@ -25,7 +21,6 @@ def infer(
         window_size,
         cuda_device,
         use_niftynet_hist_std=False,
-        flip=False,
         ):
     # Read image
     nii = nib.load(str(input_path))
@@ -50,7 +45,6 @@ def infer(
         window_border=window_cropping,
         batch_size=batch_size,
         cuda_device=cuda_device,
-        flip=flip,
     )
 
     # Postprocessing
@@ -74,7 +68,6 @@ def run_inference(
         window_border=0,
         batch_size=2,
         cuda_device=0,
-        flip=False,
         ):
     success = False
     while not success:
@@ -86,28 +79,18 @@ def run_inference(
         loader = DataLoader(sampler, batch_size=batch_size)
 
         device = get_device(cuda_device=cuda_device)
-        print('Device:', device)
         model.to(device)
         model.eval()
+
+        CHANNELS_DIMENSION = 1
 
         try:
             with torch.no_grad():
                 for batch in tqdm(loader):
                     input_tensor = batch['image'].to(device)
                     locations = batch['location']
-                    logits = model(input_tensor).to('cpu')
-                    probabilities = logits.softmax(
-                        dim=CHANNELS_DIMENSION)
-                    if flip:
-                        input_tensor = flip_batch_lr(input_tensor)
-                        logits = model(input_tensor).to('cpu')
-                        probabilities_flip = logits.softmax(
-                            dim=CHANNELS_DIMENSION)
-                        probabilities_flip = flip_batch_lr(probabilities_flip)
-                        probabilities = torch.stack(
-                            (probabilities, probabilities_flip)).mean(dim=0)
-                    labels = probabilities.argmax(
-                        dim=CHANNELS_DIMENSION, keepdim=True)
+                    logits = model(input_tensor)
+                    labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
                     outputs = labels
                     aggregator.add_batch(outputs, locations)
             success = True
@@ -156,7 +139,3 @@ def get_model():
     model_name = 'highres3dnet'
     model = torch.hub.load(repo, model_name, pretrained=True)
     return model
-
-
-def flip_batch_lr(batch):
-    return torch.flip(batch, (LR_DIMENSION,))
