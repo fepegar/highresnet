@@ -8,8 +8,8 @@ import pathlib
 
 
 @click.command()
-@click.argument('input_path', nargs=1, type=click.Path(exists=True))
-@click.option('--output_path', '-o',
+@click.argument('input-path', nargs=1, type=click.Path(exists=True))
+@click.option('--output-path', '-o',
     type=click.Path(),
 )
 @click.option(
