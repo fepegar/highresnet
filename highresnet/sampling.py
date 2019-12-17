@@ -76,8 +76,10 @@ class GridSampler(Dataset):
         spatial_coords = np.zeros((n_locations, num_dims * 2), dtype=np.int32)
         spatial_coords[:, :num_dims] = starting_coords
         for idx in range(num_dims):
-            spatial_coords[:, num_dims + idx] = \
-                starting_coords[:, idx] + window_shape[idx]
+            spatial_coords[:, num_dims + idx] = (
+                starting_coords[:, idx]
+                + window_shape[idx]
+            )
         max_coordinates = np.max(spatial_coords, axis=0)[num_dims:]
         assert np.all(max_coordinates <= shape[:num_dims]), \
             "window size greater than the spatial coordinates {} : {}".format(
