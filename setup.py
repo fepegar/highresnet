@@ -16,6 +16,7 @@ requirements = [
     'nibabel',
     'numpy',
     'SimpleITK',
+    'torch>=1.1',
     'tqdm',
 ]
 
