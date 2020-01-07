@@ -7,7 +7,6 @@
 import unittest
 from click.testing import CliRunner
 
-from highresnet import highresnet
 from highresnet import cli
 
 
