@@ -26,7 +26,7 @@ highresnet
    $ deepgif $NII_FILE
 
 
-.. image:: https://media.githubusercontent.com/media/fepegar/highresnet/master/images/slicer_screenshot.png
+.. image:: https://raw.githubusercontent.com/fepegar/highresnet/master/images/slicer_screenshot.png
      :alt: 3D Slicer screenshot
 
 PyTorch implementation of HighRes3DNet from `Li et al. 2017,
