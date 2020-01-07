@@ -27,7 +27,7 @@ def highres3dnet(*args, pretrained=False, **kwargs):
             add_dropout_layer=True,
             **kwargs,
         )
-        url_dir = 'https://github.com/fepegar/highresnet/raw/master'
+        url_dir = 'https://github.com/fepegar/highresnet-models/raw/master'
         url = '{}/highres3dnet_li_parameters-7d297872.pth'.format(url_dir)
         state_dict = torch.hub.load_state_dict_from_url(
             url, progress=False, map_location='cpu')
