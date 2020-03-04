@@ -18,6 +18,7 @@ class ConvolutionalBlock(nn.Module):
             dimensions,
             batch_norm=True,
             instance_norm=False,
+            norm_affine=True,
             padding_mode='constant',
             preactivation=True,
             kernel_size=3,
@@ -45,7 +46,7 @@ class ConvolutionalBlock(nn.Module):
 
         if preactivation:
             if batch_norm or instance_norm:
-                layers.append(norm_class(in_channels))
+                layers.append(norm_class(in_channels, affine=norm_affine))
             if activation:
                 layers.append(nn.ReLU())
 
@@ -64,7 +65,7 @@ class ConvolutionalBlock(nn.Module):
 
         if not preactivation:
             if batch_norm or instance_norm:
-                layers.append(norm_class(out_channels))
+                layers.append(norm_class(out_channels, affine=norm_affine))
             if activation:
                 layers.append(nn.ReLU())
 
