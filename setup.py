@@ -12,12 +12,8 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'Click>=7.0',
-    'nibabel',
-    'numpy',
-    'SimpleITK',
-    'torch>=1.1',
-    'tqdm',
+    'Click',
+    'torchio',
 ]
 
 setup_requirements = []
@@ -43,6 +39,7 @@ setup(
         'console_scripts': [
             'deepgif=highresnet.cli.deepgif:main',
             'download_oasis=highresnet.cli.download_oasis:main',
+            'mri_features=highresnet.cli.mri_features:main',
         ],
     },
     install_requires=requirements,

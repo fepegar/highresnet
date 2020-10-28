@@ -1,7 +1,10 @@
+from pathlib import Path
+
 import torch
 import numpy as np
 import nibabel as nib
 from tqdm import tqdm
+import torchio as tio
 from torch.utils.data import DataLoader
 from .sampling import GridSampler, GridAggregator
 from .preprocessing import (
@@ -10,6 +13,7 @@ from .preprocessing import (
     resample_ras_1mm_iso,
     resample_to_reference,
     mean_plus,
+    LI_LANDMARKS,
 )
 
 def infer(
@@ -130,7 +134,7 @@ def to_tuple(value):
     return value
 
 
-def get_model():
+def get_model(classifier=True):
     """
     Using PyTorch Hub as I haven't been able to install the .pth file
     within the pip package
@@ -138,4 +142,35 @@ def get_model():
     repo = 'fepegar/highresnet'
     model_name = 'highres3dnet'
     model = torch.hub.load(repo, model_name, pretrained=True)
+    if not classifier:
+        model.block[6] = torch.nn.Identity()
     return model
+
+
+def extract_features(input_path, output_path, pooling):
+    device = get_device()
+    model = get_model(classifier=False).to(device).eval()
+    torch.set_grad_enabled(False)
+    image = tio.ScalarImage(input_path)
+    subject = tio.Subject(t1=image)
+    transform = tio.HistogramStandardization(landmarks=dict(t1=LI_LANDMARKS))
+    transformed = transform(subject)
+    x = transformed.t1.data[None].to(device)  # None adds batch dimension
+    logits = model(x).cpu()
+    if pooling:
+        global_average_pooled = logits.mean(dim=(-3, -2, -1))  # spatial dims
+        features = global_average_pooled.squeeze().tolist()
+        torch.save(features, output_path)
+    else:
+        features = logits.squeeze()
+        output_dir = Path(output_path)
+        image_name = image.path.name
+        stem = image['stem']
+        for i, feature_volume in enumerate(features):
+            feature_image = tio.ScalarImage(
+                tensor=feature_volume[None],
+                affine=image.affine,
+            )
+            feature_name = image_name.replace(stem, f'{stem}_feature_{i}')
+            feature_path = output_dir / feature_name
+            feature_image.save(feature_path)
