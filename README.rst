@@ -78,7 +78,7 @@ Installation
 
 .. code-block:: shell
 
-   ENVNAME="gifenv"
+   ENVNAME="gifenv"  # for example
    conda create -n $ENVNAME python -y
    conda activate $ENVNAME
 
@@ -89,7 +89,9 @@ Within the `conda` environment:
 
 .. code-block:: shell
 
-   pip install pytorch highresnet
+   pip install light-the-torch  # to get the best PyTorch
+   ltt install torch  # to get the best PyTorch
+   pip install highresnet
 
 Now you can do
 
