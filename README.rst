@@ -61,15 +61,14 @@ directly from this repository using
 
 .. code-block:: python
 
-   >>> import torch
-   >>> repo = 'fepegar/highresnet'
-   >>> model_name = 'highres3dnet'
-   >>> print(torch.hub.help(repo, model_name))
-       "HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation"
-       "pretrained (bool): load parameters from pretrained model"
-   >>> model = torch.hub.load(repo, model_name, pretrained=True)
-   >>>
-
+   import torch
+   repo = 'fepegar/highresnet'
+   model_name = 'highres3dnet'
+   print(torch.hub.help(repo, model_name))
+   "HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation"
+   "pretrained (bool): load parameters from pretrained model"
+   model = torch.hub.load(repo, model_name, pretrained=True)
+   
 Installation
 ------------
 
@@ -97,14 +96,6 @@ Now you can do
 
 .. code-block:: python
 
-   >>> from highresnet import HighRes3DNet
-   >>> model = HighRes3DNet(in_channels=1, out_channels=160)
-   >>>
-
-Credits
--------
-
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+   from highresnet import HighRes3DNet
+   model = HighRes3DNet(in_channels=1, out_channels=160)
+   
