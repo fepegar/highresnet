@@ -6,19 +6,8 @@ highresnet
 .. image:: https://img.shields.io/pypi/v/highresnet.svg
         :target: https://pypi.python.org/pypi/highresnet
 
-.. image:: https://img.shields.io/travis/fepegar/highresnet.svg
-        :target: https://travis-ci.org/fepegar/highresnet
-
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3349989.svg
    :target: https://doi.org/10.5281/zenodo.3349989
-
-.. image:: https://readthedocs.org/projects/highresnet/badge/?version=latest
-        :target: https://highresnet.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
-
-.. image:: https://pyup.io/repos/github/fepegar/highresnet/shield.svg
-     :target: https://pyup.io/repos/github/fepegar/highresnet/
-     :alt: Updates
 
 ::
 
@@ -28,6 +17,7 @@ highresnet
 
 .. image:: https://raw.githubusercontent.com/fepegar/highresnet/master/images/slicer_screenshot.png
      :alt: 3D Slicer screenshot
+
 
 PyTorch implementation of HighRes3DNet from `Li et al. 2017,
 *On the Compactness, Efficiency, and Representation of
