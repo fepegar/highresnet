@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "highresnet"
+version = "0.10.2"
+description = "PyTorch implementation of HighRes3DNet."
+readme = "README.rst"
+authors = [
+    { name = "Fernando Perez-Garcia" },
+]
+license = {text = "MIT license"}
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "Click>=7.0",
+    "nibabel",
+    "numpy",
+    "SimpleITK",
+    "torch>=1.1",
+    "tqdm",
+]
+
+[project.urls]
+Homepage = "https://github.com/fepegar/highresnet"
+Source = "https://github.com/fepegar/highresnet"
+
+[project.scripts]
+deepgif = "highresnet.cli.deepgif:main"
+highresnet = "highresnet.cli.deepgif:main"
+download_oasis = "highresnet.cli.download_oasis:main"
+
+[dependency-groups]
+dev = [
+    "bump-my-version",
+    "ipykernel",
+    "ipywidgets",
+    "sphinx==1.8.5",
+    "tox==3.14.0",
+]
+
+[tool.bumpversion]
+current_version = "0.10.2"
+commit = true
+tag = true
+
+[[tool.bumpversion.files]]
+filename = "src/highresnet/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'

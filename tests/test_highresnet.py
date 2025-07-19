@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+
 
 """Tests for `highresnet` package."""
 
-
 import unittest
+
 from click.testing import CliRunner
 
 from highresnet.cli import deepgif

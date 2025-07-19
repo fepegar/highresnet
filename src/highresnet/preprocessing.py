@@ -22,7 +22,7 @@ def preprocess(data, padding, hist_masking_function=None):
 def pad(data, padding):
     # Should I use this value for padding?
     value = data[0, 0, 0]
-    return np.pad(data, padding, mode='constant', constant_values=value)
+    return np.pad(data, padding, mode="constant", constant_values=value)
 
 
 def crop(data, padding):
@@ -51,9 +51,9 @@ def mean_plus(data):
 
 def resample_spacing(nifti, output_spacing, interpolation):
     output_spacing = tuple(output_spacing)
-    temp_dir = Path(tempfile.gettempdir()) / '.deepgif'
+    temp_dir = Path(tempfile.gettempdir()) / ".deepgif"
     temp_dir.mkdir(exist_ok=True)
-    temp_path = temp_dir / 'deepgif_resampled.nii'
+    temp_path = temp_dir / "deepgif_resampled.nii"
     temp_path = str(temp_path)
 
     nifti.to_filename(temp_path)
@@ -76,7 +76,9 @@ def resample_spacing(nifti, output_spacing, interpolation):
     resample = sitk.ResampleImageFilter()
     resample.SetInterpolator(interpolation)
     resample.SetOutputDirection(image.GetDirection())
-    resample.SetOutputOrigin(image.GetOrigin())  # TODO: double-check that this is correct
+    resample.SetOutputOrigin(
+        image.GetOrigin()
+    )  # TODO: double-check that this is correct
     resample.SetOutputPixelType(image.GetPixelID())
     resample.SetOutputSpacing(output_spacing)
     resample.SetSize(output_size)
@@ -104,12 +106,12 @@ def resample_ras_1mm_iso(nifti, interpolation=None):
 
 
 def resample_to_reference(
-        reference_path,
-        floating_path,
-        result_path,
-        interpolation=None,
-        default_value=0.0,
-        ):
+    reference_path,
+    floating_path,
+    result_path,
+    interpolation=None,
+    default_value=0.0,
+):
     if interpolation is None:
         interpolation = sitk.sitkNearestNeighbor
     reference = sitk.ReadImage(str(reference_path))

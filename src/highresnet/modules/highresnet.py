@@ -5,25 +5,25 @@ from .dilation import DilationBlock
 from .convolution import ConvolutionalBlock
 
 
-__all__ = ['HighResNet', 'HighRes2DNet', 'HighRes3DNet']
+__all__ = ["HighResNet", "HighRes2DNet", "HighRes3DNet"]
 
 
 class HighResNet(nn.Module):
     def __init__(
-            self,
-            in_channels,
-            out_channels,
-            dimensions=None,
-            initial_out_channels_power=4,
-            layers_per_residual_block=2,
-            residual_blocks_per_dilation=3,
-            dilations=3,
-            batch_norm=True,
-            instance_norm=False,
-            residual=True,
-            padding_mode='constant',
-            add_dropout_layer=False,
-            ):
+        self,
+        in_channels,
+        out_channels,
+        dimensions=None,
+        initial_out_channels_power=4,
+        layers_per_residual_block=2,
+        residual_blocks_per_dilation=3,
+        dilations=3,
+        batch_norm=True,
+        instance_norm=False,
+        residual=True,
+        padding_mode="constant",
+        add_dropout_layer=False,
+    ):
         assert dimensions in (2, 3)
         super().__init__()
         self.in_channels = in_channels
@@ -36,7 +36,7 @@ class HighResNet(nn.Module):
         blocks = nn.ModuleList()
 
         # Add first conv layer
-        initial_out_channels = 2 ** initial_out_channels_power
+        initial_out_channels = 2**initial_out_channels_power
         first_conv_block = ConvolutionalBlock(
             in_channels=self.in_channels,
             out_channels=initial_out_channels,
@@ -55,7 +55,7 @@ class HighResNet(nn.Module):
         for dilation_idx in range(dilations):
             if dilation_idx >= 1:
                 in_channels = dilation_block.out_channels
-            dilation = 2 ** dilation_idx
+            dilation = 2**dilation_idx
             dilation_block = DilationBlock(
                 in_channels,
                 out_channels,
@@ -135,11 +135,11 @@ class HighResNet(nn.Module):
 
 class HighRes2DNet(HighResNet):
     def __init__(self, *args, **kwargs):
-        kwargs['dimensions'] = 2
+        kwargs["dimensions"] = 2
         super().__init__(*args, **kwargs)
 
 
 class HighRes3DNet(HighResNet):
     def __init__(self, *args, **kwargs):
-        kwargs['dimensions'] = 3
+        kwargs["dimensions"] = 3
         super().__init__(*args, **kwargs)

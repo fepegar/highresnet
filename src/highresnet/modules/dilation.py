@@ -4,18 +4,18 @@ from .residual import ResidualBlock
 
 class DilationBlock(nn.Module):
     def __init__(
-            self,
-            in_channels,
-            out_channels,
-            dilation,
-            dimensions,
-            layers_per_block=2,
-            num_residual_blocks=3,
-            batch_norm=True,
-            instance_norm=False,
-            residual=True,
-            padding_mode='constant',
-            ):
+        self,
+        in_channels,
+        out_channels,
+        dilation,
+        dimensions,
+        layers_per_block=2,
+        num_residual_blocks=3,
+        batch_norm=True,
+        instance_norm=False,
+        residual=True,
+        padding_mode="constant",
+    ):
         super().__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
