@@ -3,34 +3,34 @@ import torch.nn.functional as F
 
 
 PADDING_MODES = {
-    'reflect': 'Reflection',
-    'replicate': 'Replication',
-    'constant': 'Zero',
+    "reflect": "Reflection",
+    "replicate": "Replication",
+    "constant": "Zero",
 }
 
 
 class ConvolutionalBlock(nn.Module):
     def __init__(
-            self,
-            in_channels,
-            out_channels,
-            dilation,
-            dimensions,
-            batch_norm=True,
-            instance_norm=False,
-            norm_affine=True,
-            padding_mode='constant',
-            preactivation=True,
-            kernel_size=3,
-            activation=True,
-            ):
+        self,
+        in_channels,
+        out_channels,
+        dilation,
+        dimensions,
+        batch_norm=True,
+        instance_norm=False,
+        norm_affine=True,
+        padding_mode="constant",
+        preactivation=True,
+        kernel_size=3,
+        activation=True,
+    ):
         assert padding_mode in PADDING_MODES.keys()
         assert not (batch_norm and instance_norm)
         super().__init__()
 
         if dimensions == 2:
             # pylint: disable=not-callable
-            class_name = '{}Pad2d'.format(PADDING_MODES[padding_mode])
+            class_name = "{}Pad2d".format(PADDING_MODES[padding_mode])
             padding_class = getattr(nn, class_name)
             padding_instance = padding_class(dilation)
         elif dimensions == 3:

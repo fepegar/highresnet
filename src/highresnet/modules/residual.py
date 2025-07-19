@@ -10,26 +10,26 @@ CHANNELS_DIM = 1
 
 class ResidualBlock(nn.Module):
     def __init__(
-            self,
-            in_channels,
-            out_channels,
-            num_layers,
-            dilation,
-            dimensions,
-            batch_norm=True,
-            instance_norm=False,
-            residual=True,
-            residual_type='pad',
-            padding_mode='constant',
-            ):
-        assert residual_type in ('pad', 'project')
+        self,
+        in_channels,
+        out_channels,
+        num_layers,
+        dilation,
+        dimensions,
+        batch_norm=True,
+        instance_norm=False,
+        residual=True,
+        residual_type="pad",
+        padding_mode="constant",
+    ):
+        assert residual_type in ("pad", "project")
         super().__init__()
         self.residual = residual
         self.change_dimension = in_channels != out_channels
         self.residual_type = residual_type
         self.dimensions = dimensions
         if self.change_dimension:
-            if residual_type == 'project':
+            if residual_type == "project":
                 conv_class = nn.Conv2d if dimensions == 2 else nn.Conv3d
                 self.change_dim_layer = conv_class(
                     in_channels,
@@ -73,17 +73,17 @@ class ResidualBlock(nn.Module):
         out = self.residual_block(x)
         if self.residual:
             if self.change_dimension:
-                if self.residual_type == 'project':
+                if self.residual_type == "project":
                     x = self.change_dim_layer(x)
-                elif self.residual_type == 'pad':
+                elif self.residual_type == "pad":
                     batch_size = x.shape[BATCH_DIM]
                     x_channels = x.shape[CHANNELS_DIM]
                     out_channels = out.shape[CHANNELS_DIM]
                     spatial_dims = x.shape[2:]
                     diff_channels = out_channels - x_channels
                     zeros_half = x.new_zeros(
-                        batch_size, diff_channels // 2, *spatial_dims)
-                    x = torch.cat((zeros_half, x, zeros_half),
-                                  dim=CHANNELS_DIM)
+                        batch_size, diff_channels // 2, *spatial_dims
+                    )
+                    x = torch.cat((zeros_half, x, zeros_half), dim=CHANNELS_DIM)
             out = x + out
         return out

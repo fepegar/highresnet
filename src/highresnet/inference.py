@@ -12,16 +12,17 @@ from .preprocessing import (
     mean_plus,
 )
 
+
 def infer(
-        input_path,
-        output_path,
-        batch_size,
-        window_cropping,
-        volume_padding,
-        window_size,
-        cuda_device,
-        use_niftynet_hist_std=False,
-        ):
+    input_path,
+    output_path,
+    batch_size,
+    window_cropping,
+    volume_padding,
+    window_size,
+    cuda_device,
+    use_niftynet_hist_std=False,
+):
     # Read image
     nii = nib.load(str(input_path))
     needs_resampling = check_header(nii)
@@ -62,13 +63,13 @@ def infer(
 
 
 def run_inference(
-        data,
-        model,
-        window_size,
-        window_border=0,
-        batch_size=2,
-        cuda_device=0,
-        ):
+    data,
+    model,
+    window_size,
+    window_border=0,
+    batch_size=2,
+    cuda_device=0,
+):
     success = False
     while not success:
         window_sizes = to_tuple(window_size)
@@ -87,8 +88,8 @@ def run_inference(
         try:
             with torch.no_grad():
                 for batch in tqdm(loader):
-                    input_tensor = batch['image'].to(device)
-                    locations = batch['location']
+                    input_tensor = batch["image"].to(device)
+                    locations = batch["location"]
                     logits = model(input_tensor)
                     labels = logits.argmax(dim=CHANNELS_DIMENSION, keepdim=True)
                     outputs = labels
@@ -96,30 +97,31 @@ def run_inference(
             success = True
         except RuntimeError as e:
             print(e)
-            print('Window size', window_size, 'is too large.')
+            print("Window size", window_size, "is too large.")
             window_size = int(window_size * 0.75)
-            print('Trying with smaller window size', window_size)
+            print("Trying with smaller window size", window_size)
 
     return aggregator.output_array
 
 
 def check_header(nifti_image):
-    orientation = ''.join(nib.aff2axcodes(nifti_image.affine))
+    orientation = "".join(nib.aff2axcodes(nifti_image.affine))
     spacing = nifti_image.header.get_zooms()
     one_iso = 1, 1, 1
-    is_ras = orientation == 'RAS'
+    is_ras = orientation == "RAS"
     if not is_ras:
-        print(f'Detected orientation: {orientation}. Reorienting to RAS...')
+        print(f"Detected orientation: {orientation}. Reorienting to RAS...")
     is_1_iso = np.allclose(spacing, one_iso)
     if not is_1_iso:
-        print(f'Detected spacing: {spacing}. Resampling to 1 mm iso...')
+        print(f"Detected spacing: {spacing}. Resampling to 1 mm iso...")
     needs_resampling = not is_ras or not is_1_iso
     return needs_resampling
 
 
 def get_device(cuda_device=0):
     return torch.device(
-        'cuda:{}'.format(cuda_device) if torch.cuda.is_available() else 'cpu')
+        "cuda:{}".format(cuda_device) if torch.cuda.is_available() else "cpu"
+    )
 
 
 def to_tuple(value):
@@ -135,7 +137,7 @@ def get_model():
     Using PyTorch Hub as I haven't been able to install the .pth file
     within the pip package
     """
-    repo = 'fepegar/highresnet'
-    model_name = 'highres3dnet'
+    repo = "fepegar/highresnet"
+    model_name = "highres3dnet"
     model = torch.hub.load(repo, model_name, pretrained=True)
     return model

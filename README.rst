@@ -55,8 +55,7 @@ Command line interface
 `PyTorch Hub <https://pytorch.org/hub>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you are using `pytorch>=1.1.0`, you can import the model
-directly from this repository using
+You can import the model directly from this repository using the
 `PyTorch Hub <https://pytorch.org/hub>`_.
 
 .. code-block:: python
@@ -68,28 +67,12 @@ directly from this repository using
    "HighRes3DNet by Li et al. 2017 for T1-MRI brain parcellation"
    "pretrained (bool): load parameters from pretrained model"
    model = torch.hub.load(repo, model_name, pretrained=True)
-   
+
 Installation
 ------------
 
-1. Create a `conda <https://docs.conda.io/en/latest/>`_ environment (recommended)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. code-block:: shell
 
-   ENVNAME="gifenv"  # for example
-   conda create -n $ENVNAME python -y
-   conda activate $ENVNAME
-
-2. Install PyTorch and `highresnet`
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Within the `conda` environment:
-
-.. code-block:: shell
-
-   pip install light-the-torch  # to get the best PyTorch
-   ltt install torch  # to get the best PyTorch
    pip install highresnet
 
 Now you can do
@@ -98,4 +81,3 @@ Now you can do
 
    from highresnet import HighRes3DNet
    model = HighRes3DNet(in_channels=1, out_channels=160)
-   

@@ -11,6 +11,7 @@ DEFAULT_CUTOFF = (0.01, 0.99)
 
 # Functions from NiftyNet
 
+
 def __compute_percentiles(img, mask, cutoff):
     """
     Creates the list of percentile values to be used as landmarks for the
@@ -24,15 +25,27 @@ def __compute_percentiles(img, mask, cutoff):
     :return perc_results: list of percentiles value for the given image over
     the mask
     """
-    perc = [cutoff[0],
-            0.1, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9,
-            cutoff[1]]
+    perc = [
+        cutoff[0],
+        0.1,
+        0.2,
+        0.25,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.75,
+        0.8,
+        0.9,
+        cutoff[1],
+    ]
     masked_img = ma.masked_array(img, np.logical_not(mask)).compressed()
     perc_results = np.percentile(masked_img, 100 * np.array(perc))
     return perc_results
 
 
-def __standardise_cutoff(cutoff, type_hist='percentile'):
+def __standardise_cutoff(cutoff, type_hist="percentile"):
     """
     Standardises the cutoff values given in the configuration
 
@@ -50,9 +63,9 @@ def __standardise_cutoff(cutoff, type_hist='percentile'):
         return DEFAULT_CUTOFF
     if cutoff[0] > cutoff[1]:
         cutoff[0], cutoff[1] = cutoff[1], cutoff[0]
-    cutoff[0] = max(0., cutoff[0])
-    cutoff[1] = min(1., cutoff[1])
-    if type_hist == 'quartile':
+    cutoff[0] = max(0.0, cutoff[0])
+    cutoff[1] = min(1.0, cutoff[1])
+    if type_hist == "quartile":
         cutoff[0] = np.min([cutoff[0], 0.24])
         cutoff[1] = np.max([cutoff[1], 0.76])
     else:
@@ -62,7 +75,7 @@ def __standardise_cutoff(cutoff, type_hist='percentile'):
 
 
 def create_standard_range():
-    return 0., 100.
+    return 0.0, 100.0
 
 
 def __averaged_mapping(perc_database, s1, s2):

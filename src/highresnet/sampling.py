@@ -7,6 +7,7 @@ class GridSampler(Dataset):
     """
     Adapted from NiftyNet
     """
+
     def __init__(self, data, window_size, border):
         self.array = data
         self.locations = self.grid_spatial_coordinates(
@@ -47,7 +48,8 @@ class GridSampler(Dataset):
         sampling_point_set = np.unique(sampling_point_set).flatten()
         if len(sampling_point_set) == 2:
             sampling_point_set = np.append(
-                sampling_point_set, np.round(np.mean(sampling_point_set)))
+                sampling_point_set, np.round(np.mean(sampling_point_set))
+            )
         _, uniq_idx = np.unique(sampling_point_set, return_index=True)
         return sampling_point_set[np.sort(uniq_idx)]
 
@@ -57,8 +59,7 @@ class GridSampler(Dataset):
         num_dims = len(shape)
         grid_size = [
             max(win_size - 2 * border, 0)
-            for (win_size, border)
-            in zip(window_shape, border)
+            for (win_size, border) in zip(window_shape, border)
         ]
         steps_along_each_dim = [
             GridSampler._enumerate_step_points(
@@ -77,13 +78,14 @@ class GridSampler(Dataset):
         spatial_coords[:, :num_dims] = starting_coords
         for idx in range(num_dims):
             spatial_coords[:, num_dims + idx] = (
-                starting_coords[:, idx]
-                + window_shape[idx]
+                starting_coords[:, idx] + window_shape[idx]
             )
         max_coordinates = np.max(spatial_coords, axis=0)[num_dims:]
-        assert np.all(max_coordinates <= shape[:num_dims]), \
+        assert np.all(max_coordinates <= shape[:num_dims]), (
             "window size greater than the spatial coordinates {} : {}".format(
-                max_coordinates, shape)
+                max_coordinates, shape
+            )
+        )
         return spatial_coords
 
 
@@ -91,6 +93,7 @@ class GridAggregator:
     """
     Adapted from NiftyNet
     """
+
     def __init__(self, data, window_border):
         self.window_border = window_border
         self.output_array = np.full(
@@ -134,7 +137,8 @@ class GridAggregator:
         location_init = np.copy(locations)
         init_ones = np.ones_like(windows)
         windows, _ = self.crop_batch(
-            windows, location_init,
+            windows,
+            location_init,
             self.window_border,
         )
         location_init = np.copy(locations)
