@@ -42,8 +42,6 @@ dev = [
     "bump-my-version",
     "ipykernel",
     "ipywidgets",
-    "sphinx==1.8.5",
-    "tox==3.14.0",
 ]
 
 [tool.bumpversion]
