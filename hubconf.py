@@ -1,6 +1,12 @@
+import sys
+from pathlib import Path
+
 import torch
 
 dependencies = ["torch"]
+
+this_dir = Path(__file__).parent
+sys.path.append(str(this_dir / "src"))
 
 
 def highres2dnet(*args, **kwargs):
